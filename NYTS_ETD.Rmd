@@ -1,0 +1,778 @@
+---
+title: "Porject"
+author: "Yufeng Zhu"
+date: "6/24/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(readr)
+nyts <- read_csv('nyts.csv')
+nyts
+```
+
+
+```{r}
+library(tidyverse)
+library("haven")
+library("survey")
+library("jtools")
+library("remotes")
+library("svrepmisc")
+library("car")
+```
+```{r}
+str(nyts)
+```
+```{r}
+nyts$Gender <- factor(nyts$gender)
+nyts$E_cigarettes_use_category <- factor(nyts$E_cigarettes_use_category)
+nyts$Ever_cigarettes_use <- factor(nyts$Ever_cigarettes_use)
+nyts$Ever_e_cigarettes_use <- factor(nyts$Ever_e_cigarettes_use)
+nyts$Social_media_use_category  <- factor(nyts$Social_media_use_category)
+nyts$Social_media_category <- factor(nyts$Social_media_category)
+nyts$Social_media_sites <- as.numeric(nyts$Social_media_sites)
+nyts$Grade_category <- factor(nyts$Grade_category)
+nyts$Race_Ethnicity <- factor(nyts$Race_Ethnicity)
+str(nyts)
+```
+
+
+
+```{r}
+#Test the data with missing values as a seperate category first 
+d_nyts<- svydesign(id=~psu, strata=~v_stratum, weights=~finwgt, survey.lonely.psu = "adjust", data=nyts,
+nest=TRUE)
+d_nyts
+```
+
+
+```{r}
+summary(d_nyts)
+```
+
+
+
+```{r}
+# Calculate weighted stats
+svyciprop(~I(gender==1), d_nyts, method="likelihood")
+```
+```{r}
+svyciprop(~I(gender==2), d_nyts, method="likelihood")
+```
+
+```{r}
+svyciprop(~I(Ever_e_cigarettes_use==0), d_nyts, method="likelihood")
+svyciprop(~I(Ever_e_cigarettes_use==1), d_nyts, method="likelihood")
+svyciprop(~I(Ever_e_cigarettes_use==2), d_nyts, method="likelihood")
+```
+```{r}
+nyts %>%
+  drop_na(Ever_e_cigarettes_use) %>%
+  group_by(Ever_e_cigarettes_use) %>%
+  summarize(n=n()) %>%
+  mutate(Prop=round(n/sum(n),3
+                  ))
+```
+
+```{r}
+svyciprop(~I(E_cigarettes_use_category==0), d_nyts, method="likelihood")
+svyciprop(~I(E_cigarettes_use_category==1), d_nyts, method="likelihood")
+svyciprop(~I(E_cigarettes_use_category==2), d_nyts, method="likelihood")
+```
+```{r}
+nyts %>%
+  drop_na(E_cigarettes_use_category) %>%
+  group_by(E_cigarettes_use_category) %>%
+  summarize(n=n()) %>%
+  mutate(Prop=round(n/sum(n),3
+                  ))
+```
+```{r}
+svyciprop(~I(Social_media_use_category==1), d_nyts, method="likelihood")
+svyciprop(~I(Social_media_use_category==2), d_nyts, method="likelihood")
+svyciprop(~I(Social_media_use_category==3), d_nyts, method="likelihood")
+svyciprop(~I(Social_media_use_category==4), d_nyts, method="likelihood")
+```
+```{r}
+nyts %>%
+  drop_na(Social_media_use_category) %>%
+  group_by(Social_media_use_category) %>%
+  summarize(n=n()) %>%
+  mutate(Prop=round(n/sum(n),3
+                  ))
+```
+```{r}
+svyciprop(~I(Social_media_category==1), d_nyts, method="likelihood")
+svyciprop(~I(Social_media_category==2), d_nyts, method="likelihood")
+svyciprop(~I(Social_media_category==3), d_nyts, method="likelihood")
+svyciprop(~I(Social_media_category==4), d_nyts, method="likelihood")
+```
+```{r}
+nyts %>%
+  drop_na(Social_media_category) %>%
+  group_by(Social_media_category) %>%
+  summarize(n=n()) %>%
+  mutate(Prop=round(n/sum(n),3
+                  ))
+```
+```{r}
+svyciprop(~I(Gender==1), d_nyts, method="likelihood")
+svyciprop(~I(Gender==2), d_nyts, method="likelihood")
+svyciprop(~I(Gender==3), d_nyts, method="likelihood")
+```
+```{r}
+nyts %>%
+  drop_na(Gender) %>%
+  group_by(Gender) %>%
+  summarize(n=n()) %>%
+  mutate(Prop=round(n/sum(n),3
+                  ))
+```
+```{r}
+svyciprop(~I(Grade_category==1), d_nyts, method="likelihood")
+svyciprop(~I(Grade_category==2), d_nyts, method="likelihood")
+svyciprop(~I(Grade_category==3), d_nyts, method="likelihood")
+```
+```{r}
+nyts %>%
+  drop_na(Grade_category) %>%
+  group_by(Grade_category) %>%
+  summarize(n=n()) %>%
+  mutate(Prop=round(n/sum(n),3
+                  ))
+```
+```{r}
+svyciprop(~I(Ever_cigarettes_use==1), d_nyts, method="likelihood")
+svyciprop(~I(Ever_cigarettes_use==2), d_nyts, method="likelihood")
+svyciprop(~I(Ever_cigarettes_use==3), d_nyts, method="likelihood")
+```
+```{r}
+nyts %>%
+  drop_na(Ever_cigarettes_use) %>%
+  group_by(Ever_cigarettes_use) %>%
+  summarize(n=n()) %>%
+  mutate(Prop=round(n/sum(n),3
+                  ))
+```
+```{r}
+svyciprop(~I(Race_Ethnicity==1), d_nyts, method="likelihood")
+svyciprop(~I(Race_Ethnicity==2), d_nyts, method="likelihood")
+svyciprop(~I(Race_Ethnicity==3), d_nyts, method="likelihood")
+svyciprop(~I(Race_Ethnicity==4), d_nyts, method="likelihood")
+```
+```{r}
+nyts %>%
+  drop_na(Race_Ethnicity) %>%
+  group_by(Race_Ethnicity) %>%
+  summarize(n=n()) %>%
+  mutate(Prop=round(n/sum(n),3
+                  ))
+```
+```{r}
+#Return the missing value from categorical value to NA
+nyts2 <- nyts %>% 
+  mutate(Age=na_if(Age,12),
+         Age_continuous= na_if(Age_continuous, 20),
+         Gender = na_if(Gender, 3),
+         Grade_category = na_if(Grade_category, 3),
+         Ever_cigarettes_use = na_if(Ever_cigarettes_use, 3),
+         Social_media_category = na_if(Social_media_category, 4),
+         Social_media_use_category = na_if(Social_media_use_category, 4),
+         Ever_e_cigarettes_use = na_if(Ever_e_cigarettes_use, 2),
+             E_cigarettes_use_category = na_if(E_cigarettes_use_category, 2),
+                        )
+```
+
+
+```{r}
+#Fit the logistic regression model with the svyglm() function from the survey package
+nyts3 <- nyts2 %>% dplyr::select(Ever_e_cigarettes_use,E_cigarettes_use_category,E_cigarettes_use, Social_media_use_category,Social_media_category,Social_media_sites,Age_continuous,Race_Ethnicity,Gender,Grade_category,Ever_cigarettes_use,psu,finwgt,v_stratum) 
+d_nyts3<- svydesign(id=~psu, strata=~v_stratum, weights=~finwgt, survey.lonely.psu = "adjust", data=nyts3,
+nest=TRUE)
+nyts4 <- nyts3 %>% dplyr::select(Ever_e_cigarettes_use, Social_media_use_category,Social_media_category,Social_media_sites,Age_continuous,Race_Ethnicity,Gender,Grade_category,Ever_cigarettes_use,psu,finwgt,v_stratum)
+d_nyts4<- svydesign(id=~psu, strata=~v_stratum, weights=~finwgt, survey.lonely.psu = "adjust", data=nyts4,
+nest=TRUE)
+```
+```{r}
+svymean(~Age_continuous+Social_media_sites,d_nyts3, na = TRUE)
+svysd(~Age_continuous+Social_media_sites,d_nyts3, na = TRUE)
+svyquantile(~Age_continuous+Social_media_sites,d_nyts3, na = TRUE, c(0,.25,.5,.75,1),ci=TRUE)
+```
+
+```{r}
+svyciprop(~I(Gender==2), d_nyts4, method="likelihood")
+logit_gender <- (svyglm(Ever_e_cigarettes_use~Gender, family=quasibinomial, design=d_nyts4
+, na.action = na.omit))
+summary(logit_gender)
+```
+
+
+
+```{r}
+#Outcome 1: Ever e-cig use
+#To get around the warning regarding noninteger counts created by sample weights, use the quasibinomial method.
+logit1d <- (svyglm(Ever_e_cigarettes_use~Social_media_use_category+Social_media_category+Social_media_sites+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use, family=quasibinomial, design=d_nyts4
+, na.action = na.omit))
+logit1d
+```
+```{r}
+summ(
+  logit1d,
+  scale = TRUE,
+  confint = getOption("summ-confint", TRUE),
+  ci.width = getOption("summ-ci.width", 0.95),
+  digits = getOption("jtools-digits", default = 2),
+  pvals = getOption("summ-pvals", TRUE),
+  n.sd = 1,
+  center = FALSE,
+  transform.response = FALSE,
+  scale.only = FALSE,
+  exp = FALSE,
+  vifs = getOption("summ-vifs", TRUE),
+  model.info = getOption("summ-model.info", TRUE),
+  model.fit = getOption("summ-model.fit", TRUE),
+  which.cols = NULL
+)
+```
+```{r}
+# Find adjusted odds ratio
+library(basecamb)
+or_model_summary(
+  logit1d,
+  conf_int = 1.96,
+  print_intercept = FALSE,
+  round_est = 2,
+  round_p = 4
+)
+```
+
+
+
+```{r}
+#Access the model
+psrsq(logit1d, method = c("Cox-Snell"))
+
+#AIC is defined using the Rao-Scott approximation to the weighted loglikelihood 
+AIC(logit1d)
+
+#BIC is a BIC for the (approximate) multivariate Gaussian models on regression coefficients from the maximal model implied by each submodel (the most complex random structure that you can apply to the data)
+BIC(logit1d, maximal=logit1d)
+
+#The Anova() function in the car package knows how to handle "svyglm" objects, producing by default type-II Wald tests
+Anova(logit1d)
+```
+
+
+
+```{r}
+#Predictor 1: Social media use
+logit1a <- (svyglm(Ever_e_cigarettes_use~Social_media_use_category+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use, family=quasibinomial, design=d_nyts4
+, na.action = na.omit))
+logit1a
+```
+```{r}
+summ(
+  logit1a,
+  scale = TRUE,
+  confint = getOption("summ-confint", TRUE),
+  ci.width = getOption("summ-ci.width", 0.95),
+  digits = getOption("jtools-digits", default =2),
+  pvals = getOption("summ-pvals", TRUE),
+  n.sd = 1,
+  center = FALSE,
+  transform.response = FALSE,
+  scale.only = FALSE,
+  exp = FALSE,
+  vifs = getOption("summ-vifs", TRUE),
+  model.info = getOption("summ-model.info", TRUE),
+  model.fit = getOption("summ-model.fit", TRUE),
+  which.cols = NULL
+)
+```
+```{r}
+or_model_summary(
+  logit1a,
+  conf_int = 1.96,
+  print_intercept = FALSE,
+  round_est = 2,
+  round_p = 4
+)
+```
+
+```{r}
+#repeat
+psrsq(logit1a, method = c("Cox-Snell"))
+AIC(logit1a)
+BIC(logit1a, maximal=logit1d)
+Anova(logit1a)
+```
+
+
+```{r}
+#Predictor 2: Social media exposure
+logit1b <- (svyglm(Ever_e_cigarettes_use~Social_media_category+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use, family=quasibinomial, design=d_nyts4
+, na.action = na.omit))
+logit1b
+```
+```{r}
+summ(
+  logit1b,
+  scale = TRUE,
+  confint = getOption("summ-confint", TRUE),
+  ci.width = getOption("summ-ci.width", 0.95),
+  digits = getOption("jtools-digits", default = 2),
+  pvals = getOption("summ-pvals", TRUE),
+  n.sd = 1,
+  center = FALSE,
+  transform.response = FALSE,
+  scale.only = FALSE,
+  exp = FALSE,
+  vifs = getOption("summ-vifs", TRUE),
+  model.info = getOption("summ-model.info", TRUE),
+  model.fit = getOption("summ-model.fit", TRUE),
+  which.cols = NULL
+)
+```
+```{r}
+or_model_summary(
+  logit1b,
+  conf_int = 1.96,
+  print_intercept = FALSE,
+  round_est = 2,
+  round_p = 4
+)
+```
+
+```{r}
+psrsq(logit1b, method = c("Cox-Snell"))
+AIC(logit1b)
+BIC(logit1b, maximal=logit1d)
+Anova(logit1b)
+```
+
+```{r}
+#Predictor 3: Social media sites
+logit1c <- (svyglm(Ever_e_cigarettes_use~Social_media_sites+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use, family=quasibinomial, design=d_nyts4
+, na.action = na.omit))
+logit1c
+```
+```{r}
+summ(
+  logit1c,
+  scale = TRUE,
+  confint = getOption("summ-confint", TRUE),
+  ci.width = getOption("summ-ci.width", 0.95),
+  digits = getOption("jtools-digits", default = 2),
+  pvals = getOption("summ-pvals", TRUE),
+  n.sd = 1,
+  center = FALSE,
+  transform.response = FALSE,
+  scale.only = FALSE,
+  exp = FALSE,
+  vifs = getOption("summ-vifs", TRUE),
+  model.info = getOption("summ-model.info", TRUE),
+  model.fit = getOption("summ-model.fit", TRUE),
+  which.cols = NULL
+)
+```
+```{r}
+or_model_summary(
+  logit1c,
+  conf_int = 1.96,
+  print_intercept = FALSE,
+  round_est = 2,
+  round_p = 4
+)
+```
+
+```{r}
+psrsq(logit1c, method = c("Cox-Snell"))
+AIC(logit1c)
+BIC(logit1c, maximal=logit1d)
+Anova(logit1c)
+```
+```{r}
+#Outcome 2: Current e-cig Use
+nyts5 <- nyts3 %>% dplyr::select(E_cigarettes_use_category, Social_media_use_category,Social_media_category,Social_media_sites,Age_continuous,Race_Ethnicity,Gender,Grade_category,Ever_cigarettes_use,psu,finwgt,v_stratum)
+d_nyts5<- svydesign(id=~psu, strata=~v_stratum, weights=~finwgt, survey.lonely.psu = "adjust", data=nyts5,
+nest=TRUE)
+logit2d <- (svyglm(E_cigarettes_use_category~Social_media_use_category+Social_media_category+Social_media_sites+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use, family=quasibinomial, design=d_nyts5
+, na.action = na.omit))
+logit2d
+```
+```{r}
+summ(
+  logit2d,
+  scale = TRUE,
+  confint = getOption("summ-confint", TRUE),
+  ci.width = getOption("summ-ci.width", 0.95),
+  digits = getOption("jtools-digits", default = 2),
+  pvals = getOption("summ-pvals", TRUE),
+  n.sd = 1,
+  center = FALSE,
+  transform.response = FALSE,
+  scale.only = FALSE,
+  exp = FALSE,
+  vifs = getOption("summ-vifs", TRUE),
+  model.info = getOption("summ-model.info", TRUE),
+  model.fit = getOption("summ-model.fit", TRUE),
+  which.cols = NULL
+)
+```
+
+```{r}
+or_model_summary(
+  logit2d,
+  conf_int = 1.96,
+  print_intercept = FALSE,
+  round_est = 2,
+  round_p = 4
+)
+```
+
+```{r}
+psrsq(logit2d, method = c("Cox-Snell"))
+AIC(logit2d)
+BIC(logit2d, maximal=logit2d)
+Anova(logit2d)
+```
+
+```{r}
+#Predictor 1: Social media use
+logit2a <- (svyglm(E_cigarettes_use_category~Social_media_use_category+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use, family=quasibinomial, design=d_nyts5
+, na.action = na.omit))
+logit2a
+```
+```{r}
+summ(
+  logit2a,
+  scale = TRUE,
+  confint = getOption("summ-confint", TRUE),
+  ci.width = getOption("summ-ci.width", 0.95),
+  digits = getOption("jtools-digits", default = 2),
+  pvals = getOption("summ-pvals", TRUE),
+  n.sd = 1,
+  center = FALSE,
+  transform.response = FALSE,
+  scale.only = FALSE,
+  exp = FALSE,
+  vifs = getOption("summ-vifs", TRUE),
+  model.info = getOption("summ-model.info", TRUE),
+  model.fit = getOption("summ-model.fit", TRUE),
+  which.cols = NULL
+)
+```
+```{r}
+or_model_summary(
+  logit2a,
+  conf_int = 1.96,
+  print_intercept = FALSE,
+  round_est = 2,
+  round_p = 4
+)
+```
+
+```{r}
+psrsq(logit2a, method = c("Cox-Snell"))
+AIC(logit2a)
+BIC(logit2a, maximal=logit2d)
+Anova(logit2a)
+```
+
+```{r}
+#Predictor 2: Social media exposure
+logit2b <- (svyglm(E_cigarettes_use_category~Social_media_category+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use, family=quasibinomial, design=d_nyts5
+, na.action = na.omit))
+logit2b
+```
+```{r}
+summ(
+  logit2b,
+  scale = TRUE,
+  confint = getOption("summ-confint", TRUE),
+  ci.width = getOption("summ-ci.width", 0.95),
+  digits = getOption("jtools-digits", default = 2),
+  pvals = getOption("summ-pvals", TRUE),
+  n.sd = 1,
+  center = FALSE,
+  transform.response = FALSE,
+  scale.only = FALSE,
+  exp = FALSE,
+  vifs = getOption("summ-vifs", TRUE),
+  model.info = getOption("summ-model.info", TRUE),
+  model.fit = getOption("summ-model.fit", TRUE),
+  which.cols = NULL
+)
+```
+```{r}
+or_model_summary(
+  logit2b,
+  conf_int = 1.96,
+  print_intercept = FALSE,
+  round_est = 2,
+  round_p = 4
+)
+```
+
+
+```{r}
+psrsq(logit2b, method = c("Cox-Snell"))
+AIC(logit2b)
+BIC(logit2b, maximal=logit2d)
+Anova(logit2b)
+```
+
+
+```{r}
+#Predictor 3: Social media sites
+logit2c <- (svyglm(E_cigarettes_use_category~Social_media_sites+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use, family=quasibinomial, design=d_nyts5
+, na.action = na.omit))
+logit2c
+```
+```{r}
+summ(
+  logit2c,
+  scale = TRUE,
+  confint = getOption("summ-confint", TRUE),
+  ci.width = getOption("summ-ci.width", 0.95),
+  digits = getOption("jtools-digits", default = 2),
+  pvals = getOption("summ-pvals", TRUE),
+  n.sd = 1,
+  center = FALSE,
+  transform.response = FALSE,
+  scale.only = FALSE,
+  exp = FALSE,
+  vifs = getOption("summ-vifs", TRUE),
+  model.info = getOption("summ-model.info", TRUE),
+  model.fit = getOption("summ-model.fit", TRUE),
+  which.cols = NULL
+)
+```
+```{r}
+or_model_summary(
+  logit2c,
+  conf_int = 1.96,
+  print_intercept = FALSE,
+  round_est = 2,
+  round_p = 4
+)
+```
+
+```{r}
+psrsq(logit2c, method = c("Cox-Snell"))
+AIC(logit2c)
+BIC(logit2c, maximal=logit2d)
+Anova(logit2c)
+```
+```{r}
+#Test if model 1 and 2 from Outcome 1 are the same
+anova(logit1d,logit1b)
+```
+
+```{r}
+#Test if models from Outcome 2 are the same
+anova(logit2a,logit2d)
+anova(logit2b,logit2d)
+anova(logit2c,logit2d)
+```
+```{r}
+# test reduced model without social media exposure
+logit2b_gnf <- (svyglm(E_cigarettes_use_category~Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use, family=quasibinomial, design=d_nyts5
+, na.action = na.omit))
+logit2b_gnf
+anova(logit2b_gnf,logit2b)
+```
+
+```{r}
+#Compare the best models from the 2 outcome variables
+compareCoefs(logit2d,logit2b)
+```
+```{r}
+summary(logit1d)$coefficients[,4]
+summary(logit2b)$coefficients[,4]
+```
+```{r}
+#Interactions
+# All pair-wise interactions for model 1d
+logit1d_int_all <- (svyglm(Ever_e_cigarettes_use~ (Social_media_use_category+Social_media_category+Social_media_sites+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use)* (Social_media_use_category+Social_media_category+Social_media_sites+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use), family=quasibinomial, design=d_nyts4
+, na.action = na.omit))
+summ(logit1d_int_all,
+  scale = TRUE,
+  confint = getOption("summ-confint", TRUE),
+  ci.width = getOption("summ-ci.width", 0.95),
+  digits = getOption("jtools-digits", default = 2),
+  pvals = getOption("summ-pvals", TRUE),
+  n.sd = 1,
+  center = FALSE,
+  transform.response = FALSE,
+  scale.only = FALSE,
+  exp = FALSE,
+  vifs = getOption("summ-vifs", TRUE),
+  model.info = getOption("summ-model.info", TRUE),
+  model.fit = getOption("summ-model.fit", TRUE),
+  which.cols = NULL)
+anova(logit1d,logit1d_int_all)
+```
+
+```{r}
+# All pair-wise interactions for model 2b
+logit2b_int_all <- (svyglm(E_cigarettes_use_category~(Social_media_category+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use)*(Social_media_category+Age_continuous+Race_Ethnicity+Gender+Grade_category+Ever_cigarettes_use), family=quasibinomial, design=d_nyts5
+, na.action = na.omit))
+logit2b_int_all
+summ(logit1d_int,
+  scale = TRUE,
+  confint = getOption("summ-confint", TRUE),
+  ci.width = getOption("summ-ci.width", 0.95),
+  digits = getOption("jtools-digits", default = 2),
+  pvals = getOption("summ-pvals", TRUE),
+  n.sd = 1,
+  center = FALSE,
+  transform.response = FALSE,
+  scale.only = FALSE,
+  exp = FALSE,
+  vifs = getOption("summ-vifs", TRUE),
+  model.info = getOption("summ-model.info", TRUE),
+  model.fit = getOption("summ-model.fit", TRUE),
+  which.cols = NULL)
+anova(logit2b,logit2b_int_all)
+```
+
+
+
+```{r}
+library(WeightedROC)
+predROC1 <- function (glm.obj1, newData1)
+{
+options(survey.lonely.psu="adjust")
+
+  pred1 <- rep(NA, nrow(newData1)); names(pred1) <- rownames(newData1)
+  model_terms1 <- attributes(glm.obj1$terms)$variables
+  predictors1 <- as.character(model_terms1[3:length(model_terms1)])
+  response1 <-  as.character(model_terms1[2])
+  newData1 <- newData1[,c("finwgt",response1,predictors1)]
+  xnn1 <- na.omit(newData1)
+  pred1[-attr(xnn1, "na.action")] <- predict(glm.obj1, xnn1)
+  guess1 <- 1/(1+exp(-pred1))
+  dframe1 <- data.frame(response1=ifelse(newData1[, response1]==0, -1, 1),
+                       guess1=guess1,
+                       WEIGHT1=newData1$finwgt)
+  dframe1 <- na.omit(dframe1)
+  dframe1$Ever_e_cigarettes_use<-as.factor(dframe1$Ever_e_cigarettes_use)
+  
+subset(WeightedROC::WeightedROC(dframe1$guess1, dframe1$Ever_e_cigarettes_use, weight=dframe1$WEIGHT1))
+}
+```
+
+```{r}
+predROC1(logit1d, nyts4)
+```
+```{r}
+library(ggplot2)
+plotAUC1 <- function (glm.obj1, newData1)
+{
+options(survey.lonely.psu="adjust")
+
+  pred1 <- rep(NA, nrow(newData1)); names(pred1) <- rownames(newData1)
+  model_terms1 <- attributes(glm.obj1$terms)$variables
+  predictors1 <- as.character(model_terms1[3:length(model_terms1)])
+  response1 <-  as.character(model_terms1[2])
+  newData1 <- newData1[,c("finwgt",response1,predictors1)]
+  xnn1 <- na.omit(newData1)
+  pred1[-attr(xnn1, "na.action")] <- predict(glm.obj1, xnn1)
+  guess1 <- 1/(1+exp(-pred1))
+  dframe1 <- data.frame(response1=ifelse(newData1[, response1]==0, -1, 1),
+                       guess1=guess1,
+                       WEIGHT1=newData1$finwgt)
+  dframe1 <- na.omit(dframe1)
+  dframe1$Ever_e_cigarettes_use<-as.factor(dframe1$Ever_e_cigarettes_use)
+tp.fp1 <- WeightedROC::WeightedROC(dframe1$guess1, dframe1$Ever_e_cigarettes_use, weight=dframe1$WEIGHT1)
+ggplot()+ geom_path(aes(FPR, TPR), data=tp.fp1)+ coord_equal()+theme_classic() + ggtitle("Area Under Curve for Ever E-cig Use") + geom_abline(intercept = 0, slope = 1)+
+     annotate("text", x = .75, y = .25, label = paste("AUC =",round(WeightedAUC(tp.fp1),3)))
+}
+```
+```{r}
+png(file="C:/Users/zhulu/Desktop/BIOST 2099/AUC1.png",
+width=600, height=350)
+plotAUC1 (logit1d, nyts4)
+dev.off()
+```
+
+```{r}
+library(WeightedROC)
+nyts5 <- nyts2 %>% dplyr::select(E_cigarettes_use_category, Social_media_use_category,Social_media_category,Social_media_sites,Age_continuous,Race_Ethnicity,Gender,Grade_category,Ever_cigarettes_use,psu,finwgt,v_stratum) 
+
+```
+
+```{r}
+predROC2 <- function (glm.obj2, newData2)
+{
+options(survey.lonely.psu="adjust")
+
+  pred2 <- rep(NA, nrow(newData2)); names(pred2) <- rownames(newData2)
+  model_terms2 <- attributes(glm.obj2$terms)$variables
+  predictors2 <- as.character(model_terms2[3:length(model_terms2)])
+  response2 <-  as.character(model_terms2[2])
+  newData2 <- newData2[,c("finwgt",response2,predictors2)]
+  xnn2 <- na.omit(newData2)
+  pred2[-attr(xnn2, "na.action")] <- predict(glm.obj2, xnn2)
+  guess2 <- 1/(1+exp(-pred2))
+  dframe2 <- data.frame(response2=ifelse(newData2[, response2]==0, -1, 1),
+                       guess2=guess2,
+                       WEIGHT2=newData2$finwgt)
+  dframe2 <- na.omit(dframe2)
+  
+subset(WeightedROC::WeightedROC(dframe2$guess2, dframe2$E_cigarettes_use_category, weight=dframe2$WEIGHT2))
+}
+```
+
+
+```{r}
+#png(file="C:/Users/zhulu/Desktop/BIOST 2099/AUC2.png",
+#width=600, height=350)
+predROC2 (logit2b, nyts5)
+#dev.off()
+```
+
+```{r}
+plotAUC2 <- function (glm.obj2, newData2)
+{
+options(survey.lonely.psu="adjust")
+
+  pred2 <- rep(NA, nrow(newData2)); names(pred2) <- rownames(newData2)
+  model_terms2 <- attributes(glm.obj2$terms)$variables
+  predictors2 <- as.character(model_terms2[3:length(model_terms2)])
+  response2 <-  as.character(model_terms2[2])
+  newData2 <- newData2[,c("finwgt",response2,predictors2)]
+  xnn2 <- na.omit(newData2)
+  pred2[-attr(xnn2, "na.action")] <- predict(glm.obj2, xnn2)
+  guess2 <- 1/(1+exp(-pred2))
+  dframe2 <- data.frame(response2=ifelse(newData2[, response2]==0, -1, 1),
+                       guess2=guess2,
+                       WEIGHT2=newData2$finwgt)
+  dframe2 <- na.omit(dframe2)
+  tp.fp2 <- WeightedROC::WeightedROC(dframe2$guess2, dframe2$E_cigarettes_use_category, weight=dframe2$WEIGHT2)
+  
+ggplot()+ geom_path(aes(FPR, TPR), data=tp.fp2)+ coord_equal()+theme_classic() + ggtitle("Area Under Curve for Current E-cig Use") + geom_abline(intercept = 0, slope = 1)+
+     annotate("text", x = .75, y = .25, label = paste("AUC =",round(WeightedAUC(tp.fp2),3)))
+}
+```
+
+```{r}
+#png(file="C:/Users/zhulu/Desktop/BIOST 2099/AUC1.png",
+#width=600, height=350)
+plotAUC2(logit2b, nyts5)
+#dev.off()
+```
+
+
+
+
+
+
+
